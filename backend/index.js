@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 import getCloset from './api/getCloset.js';
 import getUsername from './api/getUsername.js';
+import getBrands from './api/getBrands.js';
 import cors from 'cors';
 
 const app = express();
@@ -31,6 +32,17 @@ app.get("/get-username", (req, res) => {
     .catch((e) => {
       console.log("Error in getUsername: " + e);
       res.json({ "username": "" });
+    });
+});
+
+app.get("/get-brands", (req, res) => {
+  getBrands()
+    .then(data => {
+      res.setHeader("Content-Type", "application/json")
+      res.send(JSON.stringify(data, null, 2));
+    })
+    .catch((e) => {
+      console.log("Error: " + e);
     });
 });
 
