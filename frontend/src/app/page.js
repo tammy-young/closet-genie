@@ -74,7 +74,10 @@ export default function Home() {
     setCurrentPage(pageNumber);
   }
 
-  function search() {
+  function search(e) {
+    if (e) {
+      e.preventDefault();
+    }
     setIsSearching(true);
     let filtered = closetItems;
     if (searchQuery) {
@@ -107,7 +110,7 @@ export default function Home() {
   return (
     <div className="p-8">
       <h1>Welcome back, {username}</h1>
-      <div className="flex flex-row justify-center items-center mb-4 gap-4">
+      <form onSubmit={search} >
         <div className="flex flex-row justify-center items-center mb-4 gap-4">
           <Input
             type="text"
@@ -116,8 +119,6 @@ export default function Home() {
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }} />
-        </div>
-        <FormControl>
           <Autocomplete
             options={!brandsToId ? [{ name: "Loading...", brandId: 0 }] : brandsToId}
             placeholder='Brand Name'
@@ -156,10 +157,10 @@ export default function Home() {
                 }} />
             )}
           />
-        </FormControl>
-        <Button variant="outlined" onClick={search}>Search</Button>
-        <Button variant="outlined" onClick={reset}>Reset</Button>
-      </div>
+          <Button variant="outlined" onClick={search} type="submit">Search</Button>
+          <Button variant="outlined" onClick={reset} type="button">Reset</Button>
+        </div>
+      </form>
 
       <div className="flex flex-row justify-center items-center mb-4 gap-4">
         <Button
