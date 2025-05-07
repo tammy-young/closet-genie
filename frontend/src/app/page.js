@@ -5,11 +5,16 @@ import requests from "./requests";
 import ItemCard from "@/components/itemCard";
 import Button from '@mui/material/Button';
 import Input from '@mui/material/Input';
+import FormControl from '@mui/joy/FormControl';
+import Autocomplete from '@mui/joy/Autocomplete';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 
 export default function Home() {
   // non-closet stuff
   const [username, setUsername] = useState("Unknown");
   const [brands, setBrands] = useState([]);
+  const [brandsToId, setBrandsToId] = useState([]);
 
   // closet items
   const [closetItems, setClosetItems] = useState([]);
@@ -22,6 +27,7 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState(null);
 
   function fetchUsername() {
     fetch(requests.apiURL + requests.getUsername + `?userId=${process.env.NEXT_PUBLIC_USER_ID}`)
@@ -46,6 +52,14 @@ export default function Home() {
       .then((response) => response.json())
       .then((data) => {
         setBrands(data.brandsIdToName);
+        setBrandsToId(
+          Object.entries(data.brandsIdToName).map((brand, index) => {
+            return {
+              name: brand[1],
+              brandId: parseInt(brand[0])
+            }
+          })
+        );
       })
       .then(() => {
         fetchCloset();
@@ -62,7 +76,13 @@ export default function Home() {
 
   function search() {
     setIsSearching(true);
-    const filtered = closetItems.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    let filtered = closetItems;
+    if (searchQuery) {
+      filtered = filtered.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+    if (selectedBrand) {
+      filtered = filtered.filter(item => item.brandId === selectedBrand.brandId);
+    }
     setFilteredItems(filtered);
     setPages(Math.ceil(filtered.length / pageSize));
     setCurrentPage(0);
@@ -73,6 +93,7 @@ export default function Home() {
     setIsSearching(false);
     setFilteredItems([]);
     setSearchQuery("");
+    setSelectedBrand(null);
     setPages(Math.ceil(closetItems.length / pageSize));
     setCurrentPage(0);
     getPage(0, closetItems);
@@ -87,16 +108,59 @@ export default function Home() {
     <div className="p-8">
       <h1>Welcome back, {username}</h1>
       <div className="flex flex-row justify-center items-center mb-4 gap-4">
-        <Input
-          type="text"
-          placeholder="Search for items..."
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }} />
+        <div className="flex flex-row justify-center items-center mb-4 gap-4">
+          <Input
+            type="text"
+            placeholder="Search for items..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }} />
+        </div>
+        <FormControl>
+          <Autocomplete
+            options={!brandsToId ? [{ name: "Loading...", brandId: 0 }] : brandsToId}
+            placeholder='Brand Name'
+            autoHighlight
+            getOptionLabel={(option) => option.name || ''}
+            value={selectedBrand}
+            slotProps={{
+              listbox: {
+                sx: (theme) => ({
+                  zIndex: theme.vars.zIndex.modal,
+                }),
+                className: 'dark:!bg-[#1f2023]'
+              }
+            }}
+            onChange={(event, value) => {
+              setSelectedBrand(value);
+            }}
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props;
+              return (
+                <Box key={key} component="li" sx={{ display: 'flex', alignItems: 'stretch', paddingLeft: '10px', paddingRight: '10px', minHeight: '35px', maxHeight: '100px' }} {...optionProps}
+                  className='-mt-2 mb-2 dark:bg-[#1f2023] dark:text-white dark:hover:!bg-neutral-600 dark:aria-selected:bg-neutral-600 aria-selected:font-bold'>
+                  <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+                    {option.name}
+                  </div>
+                </Box>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label="Start typing..."
+                slotProps={{
+                  htmlInput: {
+                    ...params.inputProps,
+                    autoComplete: 'new-password',
+                  },
+                }} />
+            )}
+          />
+        </FormControl>
         <Button variant="outlined" onClick={search}>Search</Button>
         <Button variant="outlined" onClick={reset}>Reset</Button>
       </div>
+
       <div className="flex flex-row justify-center items-center mb-4 gap-4">
         <Button
           variant="outlined"
