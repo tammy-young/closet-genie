@@ -107,6 +107,10 @@ export default function Home() {
     fetchBrands();
   }, []);
 
+  useEffect(() => {
+    setPages(Math.ceil(closetItems.length / pageSize));
+  }, [closetItems]);
+
   return (
     <div className="p-8">
       <h1>Welcome back, {username}</h1>
