@@ -28,8 +28,6 @@ const ItemCard = ({ item, index, itemType, allBrands }) => {
         <p className='mb-0'>{item.price}</p>
         {getCurrencyIcon({ item })}
       </div>
-      <div className='flex flex-row items-center'>
-      </div>
     </div>
   )
 }
