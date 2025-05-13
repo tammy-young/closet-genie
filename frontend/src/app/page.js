@@ -21,6 +21,7 @@ export default function Home() {
   const [pages, setPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageItems, setPageItems] = useState([]);
+  const [closetBrandIds, setClosetBrandIds] = useState([]);
   const pageSize = 20;
 
   // search
@@ -41,9 +42,10 @@ export default function Home() {
     fetch(requests.apiURL + requests.getCloset + `?userId=${process.env.NEXT_PUBLIC_USER_ID}`)
       .then((response) => response.json())
       .then((data) => {
-        setClosetItems(data);
-        getPage(currentPage, data);
-        setPages(Math.ceil(closetItems.length / pageSize));
+        setClosetItems(data.closet);
+        getPage(currentPage, data.closet);
+        setPages(Math.ceil(data.closet.length / pageSize));
+        setClosetBrandIds(data.brands);
       })
   }
 
@@ -110,6 +112,19 @@ export default function Home() {
   useEffect(() => {
     setPages(Math.ceil(closetItems.length / pageSize));
   }, [closetItems]);
+
+  useEffect(() => {
+    if (closetBrandIds.length > 0) {
+      setBrandsToId(
+        Object.entries(brands).filter(([key]) => closetBrandIds.includes(parseInt(key))).map((brand, index) => {
+          return {
+            name: brand[1],
+            brandId: parseInt(brand[0])
+          }
+        })
+      );
+    }
+  }, [closetBrandIds]);
 
   return (
     <div className="p-8">
