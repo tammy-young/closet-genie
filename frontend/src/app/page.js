@@ -15,6 +15,7 @@ export default function Home() {
   const [username, setUsername] = useState("Unknown");
   const [brands, setBrands] = useState([]);
   const [brandsToId, setBrandsToId] = useState([]);
+  const [userId, setUserId] = useState("");
 
   // closet items
   const [closetItems, setClosetItems] = useState([]);
@@ -31,7 +32,7 @@ export default function Home() {
   const [selectedBrand, setSelectedBrand] = useState(null);
 
   function fetchUsername() {
-    fetch(requests.apiURL + requests.getUsername + `?userId=${process.env.NEXT_PUBLIC_USER_ID}`)
+    fetch(requests.apiURL + requests.getUsername + `?userId=${userId}`)
       .then((response) => response.json())
       .then((data) => {
         setUsername(data.username);
@@ -39,7 +40,7 @@ export default function Home() {
   }
 
   function fetchCloset() {
-    fetch(requests.apiURL + requests.getCloset + `?userId=${process.env.NEXT_PUBLIC_USER_ID}`)
+    fetch(requests.apiURL + requests.getCloset + `?userId=${userId}`)
       .then((response) => response.json())
       .then((data) => {
         setClosetItems(data.closet);
@@ -105,9 +106,22 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchUsername();
-    fetchBrands();
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const uId = urlParams.get('id');
+    if (uId) {
+      setUserId(uId);
+    } else {
+      setUserId(process.env.NEXT_PUBLIC_USER_ID);
+    }
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetchBrands();
+      fetchUsername();
+    }
+  }, [userId]);
 
   useEffect(() => {
     setPages(Math.ceil(closetItems.length / pageSize));
