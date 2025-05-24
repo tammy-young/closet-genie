@@ -5,7 +5,6 @@ import requests from "./requests";
 import ItemCard from "@/components/itemCard";
 import Button from '@mui/material/Button';
 import Input from '@mui/material/Input';
-import FormControl from '@mui/joy/FormControl';
 import Autocomplete from '@mui/joy/Autocomplete';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -22,6 +21,7 @@ export default function Home() {
   const [pages, setPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageItems, setPageItems] = useState([]);
+  const [itemType, setItemType] = useState({ name: "All", value: "" });
   const pageSize = 20;
 
   // search
@@ -29,6 +29,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState(null);
+  const itemTypeOptions = [{ name: "Fashion", value: "WARDROBE" }, { name: "Decor", value: "ANYWHERE" }, { name: "All", value: "" }];
 
   function fetchUsername() {
     fetch(requests.apiURL + requests.getUsername + `?userId=${userId}`)
@@ -87,6 +88,9 @@ export default function Home() {
     if (selectedBrand) {
       filtered = filtered.filter(item => item.brandId === selectedBrand.brandId);
     }
+    if (itemType.value) {
+      filtered = filtered.filter(item => item.type === itemType.value);
+    }
     setFilteredItems(filtered);
     setPages(Math.ceil(filtered.length / pageSize));
     setCurrentPage(0);
@@ -98,6 +102,7 @@ export default function Home() {
     setFilteredItems([]);
     setSearchQuery("");
     setSelectedBrand(null);
+    setItemType({ name: "All", value: "" });
     setPages(Math.ceil(closetItems.length / pageSize));
     setCurrentPage(0);
     getPage(0, closetItems);
@@ -153,6 +158,44 @@ export default function Home() {
             }}
             onChange={(event, value) => {
               setSelectedBrand(value);
+            }}
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props;
+              return (
+                <Box key={key} component="li" sx={{ display: 'flex', alignItems: 'stretch', paddingLeft: '10px', paddingRight: '10px', minHeight: '35px', maxHeight: '100px' }} {...optionProps}
+                  className='-mt-2 mb-2 dark:bg-[#1f2023] dark:text-white dark:hover:!bg-neutral-600 dark:aria-selected:bg-neutral-600 aria-selected:font-bold'>
+                  <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+                    {option.name}
+                  </div>
+                </Box>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label="Start typing..."
+                slotProps={{
+                  htmlInput: {
+                    ...params.inputProps,
+                    autoComplete: 'new-password',
+                  },
+                }} />
+            )}
+          />
+          <Autocomplete
+            options={itemTypeOptions}
+            placeholder='Item Type'
+            autoHighlight
+            getOptionLabel={(option) => option.name || ''}
+            value={itemType}
+            slotProps={{
+              listbox: {
+                sx: (theme) => ({
+                  zIndex: theme.vars.zIndex.modal,
+                }),
+                className: 'dark:!bg-[#1f2023]'
+              }
+            }}
+            onChange={(event, value) => {
+              setItemType(value);
             }}
             renderOption={(props, option) => {
               const { key, ...optionProps } = props;
