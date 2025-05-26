@@ -8,6 +8,8 @@ import Input from '@mui/material/Input';
 import Autocomplete from '@mui/joy/Autocomplete';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 export default function Home() {
   // non-closet stuff
@@ -15,6 +17,7 @@ export default function Home() {
   const [brands, setBrands] = useState([]);
   const [brandsToId, setBrandsToId] = useState([]);
   const [userId, setUserId] = useState("");
+  const [showPrices, setShowPrices] = useState(true);
 
   // closet items
   const [closetItems, setClosetItems] = useState([]);
@@ -220,6 +223,15 @@ export default function Home() {
           />
           <Button variant="outlined" onClick={search} type="submit">Search</Button>
           <Button variant="outlined" onClick={reset} type="button">Reset</Button>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showPrices}
+                onChange={() => setShowPrices(!showPrices)}
+              />
+            }
+            label="Show Prices"
+          />
         </div>
       </form>
 
@@ -241,7 +253,7 @@ export default function Home() {
       <div className="flex flex-wrap gap-4">
         {
           pageItems.map((item, index) => (
-            <ItemCard key={index} item={item} index={index} itemType={'fashion'} allBrands={brands} />
+            <ItemCard key={index} item={item} index={index} itemType={'fashion'} allBrands={brands} showPrices={showPrices} />
           ))
         }
       </div>

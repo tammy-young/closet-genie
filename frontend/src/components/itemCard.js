@@ -9,7 +9,7 @@ const getCurrencyIcon = ({ item }) => {
   );
 }
 
-const ItemCard = ({ item, index, itemType, allBrands }) => {
+const ItemCard = ({ item, index, itemType, allBrands, showPrices }) => {
   const [brandName, setBrandName] = useState("");
 
   useEffect(() => {
@@ -24,10 +24,14 @@ const ItemCard = ({ item, index, itemType, allBrands }) => {
       <ItemImage itemId={item.id} itemType={itemType} />
       <h6 className='mb-0 font-bold text-lg leading-tight'>{item.name}</h6>
       <p className='mb-1'>{brandName}</p>
-      <div className='flex flex-row items-center'>
-        <p className='mb-0'>{item.price}</p>
-        {getCurrencyIcon({ item })}
-      </div>
+      {
+        showPrices ? (
+          <div className='flex flex-row items-center'>
+            <p className='mb-0'>{item.price}</p>
+            {getCurrencyIcon({ item })}
+          </div>
+        ) : null
+      }
     </div>
   )
 }
