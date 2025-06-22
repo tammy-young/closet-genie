@@ -134,13 +134,14 @@ export default function Home() {
   }, [closetItems]);
 
   return (
-    <div className="p-8">
+    <div className="p-8 dark:bg-neutral-900 dark:text-white">
       <h1>Welcome back, {username}</h1>
       <form onSubmit={search} >
         <div className="flex flex-row justify-center items-center mb-4 gap-4">
           <Input
             type="text"
             placeholder="Search for items..."
+            sx={{ backgroundColor: 'white', borderRadius: '4px', width: '300px', padding: '0.1rem', paddingLeft: '0.7rem' }}
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
