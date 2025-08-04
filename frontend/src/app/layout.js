@@ -12,8 +12,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Closet Genie",
-  description: "Navigate your closet with ease",
+  title: "Closet Genie ✨",
+  description: "Navigate your closet with ease - Your magical wardrobe companion",
+  keywords: "fashion, closet, wardrobe, style, clothing",
+  authors: [{ name: "Closet Genie Team" }],
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
